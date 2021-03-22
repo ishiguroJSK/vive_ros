@@ -22,7 +22,7 @@ void mySigintHandler(int sig){
 ros::shutdown();
 }
 
-//#define USE_IMAGE
+#define USE_IMAGE
 
 #define USE_OPENGL
 //#define USE_VULKAN
@@ -108,6 +108,7 @@ class CMainApplicationMod : public CMainApplication{
       double cam_fov[LR][XY];
       int cam_pic_size_on_hmd[LR][XY];
       cv::Mat hmd_panel_roi[LR];
+      const cv::Point parallax_adjust[LR] = {cv::Point(-50,0),cv::Point(+50,0)};//視差調整用
       for(int i=0;i<LR;i++){
         ROS_INFO_THROTTLE(3.0,"Process ROS image[%d] (%dx%d) with fov (%dx%d) to (%dx%d)", i, in[i].cols, in[i].rows, (int)cam_f[i][X], (int)cam_f[i][Y], out[i].cols, out[i].rows);
         for(int j=0;j<XY;j++){
@@ -117,6 +118,7 @@ class CMainApplicationMod : public CMainApplication{
         cv::resize(in[i], ros_img_resized[i], cv::Size(cam_pic_size_on_hmd[i][X], cam_pic_size_on_hmd[i][Y]));
         cv::flip(ros_img_resized[i], ros_img_resized[i], 0);
         cv::Rect hmd_panel_area_rect( ros_img_resized[i].cols/2-out[i].cols/2, ros_img_resized[i].rows/2-out[i].rows/2, out[i].cols, out[i].rows);
+	hmd_panel_area_rect += parallax_adjust[i];
         cv::Rect ros_img_resized_rect( 0, 0, ros_img_resized[i].cols, ros_img_resized[i].rows);
         cv::Point ros_img_resized_center(ros_img_resized[i].cols/2, ros_img_resized[i].rows/2);
         cv::Rect cropped_rect;

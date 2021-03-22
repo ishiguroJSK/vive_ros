@@ -54,7 +54,8 @@ bool VRInterface::Init()
   // Loading the SteamVR Runtime
   vr::EVRInitError eError = vr::VRInitError_None;
   
-  pHMD_ = vr::VR_Init( &eError, vr::VRApplication_Background );
+  //pHMD_ = vr::VR_Init( &eError, vr::VRApplication_Background );
+  pHMD_ = vr::VR_Init( &eError, vr::VRApplication_Scene );
 
   if (eError != vr::VRInitError_None)
   {
@@ -123,10 +124,9 @@ int VRInterface::GetDeviceMatrix(int index, double pMatrix[3][4])
       for (int i=0; i<3; i++)
         for (int o=0; o<4; o++)
           pMatrix[i][o] = static_cast<double>(device_poses_[index].mDeviceToAbsoluteTracking.m[i][o]);
-
-      
-      return pHMD_->GetTrackedDeviceClass(index);
     }
+    // return device type id even if the device is not tracked well
+    return pHMD_->GetTrackedDeviceClass(index);
   }
   return 0;
 }
@@ -142,10 +142,10 @@ int VRInterface::GetDeviceVel(int index, double lin_vel[3], double ang_vel[3])
         lin_vel[i] = device_poses_[index].vVelocity.v[i];
         ang_vel[i] = device_poses_[index].vAngularVelocity.v[i];
       }
-      return pHMD_->GetTrackedDeviceClass(index);
     }
+    // return device type id even if the device is not tracked well
+    return pHMD_->GetTrackedDeviceClass(index);
   }
-    
   return 0;
 }
 
